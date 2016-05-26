@@ -3,7 +3,7 @@ package com.blah
 class Account {
 
     private BigDecimal availableBalance = 0;
-    private def transactions = [];
+    private List<Transaction> transactions = [];
     private final DateProvider dateProvider
 
     Account(DateProvider dateProvider) {
@@ -11,17 +11,21 @@ class Account {
     }
 
     def deposit(BigDecimal amount) {
-        def latestBalance = availableBalance + amount
-        def date = dateProvider.now()
-        transactions.add new Transaction([ date: date, amount: amount, balance: latestBalance])
-        availableBalance = latestBalance
+        transact(amount)
     }
 
     def withdraw(BigDecimal amount) {
-        deposit(amount.negate())
+        transact(amount.negate())
     }
 
     def statement() {
         transactions.reverse().asImmutable()
+    }
+
+    private def transact(BigDecimal amount) {
+        def latestBalance = availableBalance + amount
+        def date = dateProvider.now()
+        transactions.add(new Transaction([date: date, amount: amount, balance: latestBalance]))
+        availableBalance = latestBalance
     }
 }

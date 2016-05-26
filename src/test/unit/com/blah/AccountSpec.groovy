@@ -43,7 +43,7 @@ class AccountSpec extends Specification {
         balance == 400.0
     }
 
-    def "should return statement with date amount and balance"() {
+    def "should return statement with date amount and balance for deposit"() {
         given:
         dateProvider.now() >> "01/04/2014"
         account.deposit(300.0)
@@ -54,6 +54,20 @@ class AccountSpec extends Specification {
         then:
         statement == [
                 transaction([date: "01/04/2014", amount: 300.0, balance: 300.0])
+        ]
+    }
+
+    def "should return statement with date amount and balance for withdrawal"() {
+        given:
+        dateProvider.now() >> "01/04/2014"
+        account.withdraw(300.0)
+
+        when:
+        def statement = account.statement()
+
+        then:
+        statement == [
+                transaction([date: "01/04/2014", amount: -300.0, balance: -300.0])
         ]
     }
 
